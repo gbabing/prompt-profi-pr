@@ -1,0 +1,55 @@
+backend:
+  name: github
+  repo: gbabing/prompt-profi
+  branch: main
+  base_url: https://prompt-profi-cms-auth.gbabing.workers.dev
+  auth_endpoint: /auth
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+locale: 'de'
+
+collections:
+  - name: "prompts"
+    label: "Prompts"
+    label_singular: "Prompt"
+    folder: "src/content/prompts"
+    create: true
+    delete: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    fields:
+      - { label: "Titel", name: "title", widget: "string" }
+      - { label: "Kurzbeschreibung", name: "description", widget: "text", hint: "1-2 Sätze: Wann nutze ich diesen Prompt?" }
+      - label: "Kategorie"
+        name: "category"
+        widget: "select"
+        options:
+          - "Unterrichtsvorbereitung"
+          - "Kreativer Unterricht"
+          - "Arbeitsorganisation"
+          - "Differenzierung"
+          - "Feedback"
+          - "Elternkommunikation"
+      - label: "Schulstufe"
+        name: "stage"
+        widget: "select"
+        options:
+          - "Grundschule"
+          - "Sek I"
+          - "Sek II"
+          - "Berufsschule"
+          - "Alle"
+      - label: "Fach"
+        name: "subject"
+        widget: "string"
+        hint: "z.B. Deutsch, Mathematik, Fächerübergreifend"
+      - { label: "Hinweis (optional)", name: "hint", widget: "string", required: false, hint: "Z.B. zu Modell-Kompatibilität oder Anwendung in telli/AIS.chat" }
+      - label: "Prompt-Text"
+        name: "prompt"
+        widget: "text"
+        hint: "Der eigentliche Prompt zum Kopieren. Platzhalter in [eckigen Klammern] kennzeichnen."
+      - { label: "Reihenfolge (optional)", name: "order", widget: "number", required: false, hint: "Niedrigere Zahl = weiter oben. Leer = ans Ende." }
+      - { label: "Body (wird nicht angezeigt)", name: "body", widget: "hidden", default: "" }

@@ -1,0 +1,207 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+
+const allPrompts = await getCollection('prompts');
+const prompts = allPrompts
+  .map((p) => ({ id: p.id, ...p.data }))
+  .sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
+
+const categories = [...new Set(prompts.map((p) => p.category))].sort();
+const stages = [...new Set(prompts.map((p) => p.stage))].sort();
+const subjects = [...new Set(prompts.map((p) => p.subject))].sort();
+---
+
+<Layout title="Prompt-Profi · KI-Prompts für Lehrkräfte">
+  <header class="hero">
+    <h1>Prompt-Profi</h1>
+    <p>Geprüfte KI-Prompts für den Schulalltag.</p>
+  </header>
+
+  <div class="controls">
+    <div class="search-wrap">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>
+      </svg>
+      <input type="text" id="search" placeholder="Suchen nach Titel, Inhalt oder Stichwort …" autocomplete="off" />
+    </div>
+
+    <div class="filters">
+      <select id="f-cat" aria-label="Kategorie">
+        <option value="">Alle Kategorien</option>
+        {categories.map((c) => <option value={c}>{c}</option>)}
+      </select>
+      <select id="f-stage" aria-label="Schulstufe">
+        <option value="">Alle Schulstufen</option>
+        {stages.map((s) => <option value={s}>{s}</option>)}
+      </select>
+      <select id="f-subject" aria-label="Fach">
+        <option value="">Alle Fächer</option>
+        {subjects.map((s) => <option value={s}>{s}</option>)}
+      </select>
+      <button id="reset" type="button" aria-label="Filter zurücksetzen" title="Filter zurücksetzen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 4v5h5"/>
+        </svg>
+      </button>
+    </div>
+
+    <p class="count"><span id="count">{prompts.length}</span> Prompts</p>
+  </div>
+
+  <ul id="grid" class="grid">
+    {prompts.map((p) => (
+      <li
+        class="card"
+        data-id={p.id}
+        data-cat={p.category}
+        data-stage={p.stage}
+        data-subject={p.subject}
+        data-haystack={`${p.title} ${p.description} ${p.prompt} ${p.category} ${p.subject}`.toLowerCase()}
+      >
+        <h2>{p.title}</h2>
+        <p class="desc">{p.description}</p>
+        <div class="badges">
+          <span class="badge badge-cat">{p.category}</span>
+          <span class="badge badge-stage">{p.stage}</span>
+          <span class="badge badge-subject">{p.subject}</span>
+        </div>
+      </li>
+    ))}
+  </ul>
+
+  <div id="empty" class="empty" hidden>
+    Keine Prompts gefunden. <button id="empty-reset" type="button">Filter zurücksetzen</button>
+  </div>
+
+  <!-- Prompt-Daten als JSON für Modal -->
+  <script type="application/json" id="prompts-data" set:html={JSON.stringify(
+    prompts.reduce((acc, p) => {
+      acc[p.id] = { title: p.title, description: p.description, prompt: p.prompt, hint: p.hint, category: p.category, stage: p.stage, subject: p.subject };
+      return acc;
+    }, {})
+  )} />
+
+  <!-- Modal -->
+  <div id="modal" class="modal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="m-title">
+    <div class="modal-backdrop" data-close></div>
+    <article class="modal-content">
+      <header>
+        <h2 id="m-title"></h2>
+        <button class="icon-btn" data-close aria-label="Schließen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </header>
+      <div class="modal-badges" id="m-badges"></div>
+      <p class="modal-desc" id="m-desc"></p>
+      <div class="prompt-wrap">
+        <pre id="m-prompt"></pre>
+        <button class="copy-btn" id="m-copy">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Kopieren
+        </button>
+      </div>
+      <p class="hint" id="m-hint" hidden></p>
+    </article>
+  </div>
+</Layout>
+
+<script>
+  const data = JSON.parse(document.getElementById('prompts-data').textContent);
+  const grid = document.getElementById('grid');
+  const cards = Array.from(grid.querySelectorAll('.card'));
+  const search = document.getElementById('search');
+  const fCat = document.getElementById('f-cat');
+  const fStage = document.getElementById('f-stage');
+  const fSubject = document.getElementById('f-subject');
+  const reset = document.getElementById('reset');
+  const emptyReset = document.getElementById('empty-reset');
+  const count = document.getElementById('count');
+  const empty = document.getElementById('empty');
+
+  function applyFilters() {
+    const q = search.value.trim().toLowerCase();
+    const c = fCat.value, s = fStage.value, sb = fSubject.value;
+    let visible = 0;
+    cards.forEach((card) => {
+      const matchCat = !c || card.dataset.cat === c;
+      const matchStage = !s || card.dataset.stage === s;
+      const matchSubject = !sb || card.dataset.subject === sb;
+      const matchSearch = !q || card.dataset.haystack.includes(q);
+      const show = matchCat && matchStage && matchSubject && matchSearch;
+      card.hidden = !show;
+      if (show) visible++;
+    });
+    count.textContent = visible;
+    empty.hidden = visible !== 0;
+    grid.hidden = visible === 0;
+  }
+
+  function resetFilters() {
+    search.value = ''; fCat.value = ''; fStage.value = ''; fSubject.value = '';
+    applyFilters();
+  }
+
+  search.addEventListener('input', applyFilters);
+  [fCat, fStage, fSubject].forEach((el) => el.addEventListener('change', applyFilters));
+  reset.addEventListener('click', resetFilters);
+  emptyReset.addEventListener('click', resetFilters);
+
+  // Modal
+  const modal = document.getElementById('modal');
+  const mTitle = document.getElementById('m-title');
+  const mDesc = document.getElementById('m-desc');
+  const mPrompt = document.getElementById('m-prompt');
+  const mBadges = document.getElementById('m-badges');
+  const mHint = document.getElementById('m-hint');
+  const mCopy = document.getElementById('m-copy');
+
+  function openModal(id) {
+    const p = data[id];
+    if (!p) return;
+    mTitle.textContent = p.title;
+    mDesc.textContent = p.description;
+    mPrompt.textContent = p.prompt;
+    mBadges.innerHTML = `<span class="badge badge-cat">${p.category}</span><span class="badge badge-stage">${p.stage}</span><span class="badge badge-subject">${p.subject}</span>`;
+    if (p.hint) { mHint.textContent = 'Hinweis: ' + p.hint; mHint.hidden = false; }
+    else { mHint.hidden = true; }
+    modal.hidden = false;
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    modal.hidden = true;
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  cards.forEach((card) => {
+    card.addEventListener('click', () => openModal(card.dataset.id));
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('role', 'button');
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(card.dataset.id); }
+    });
+  });
+
+  modal.addEventListener('click', (e) => {
+    if (e.target.closest('[data-close]')) closeModal();
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.hidden) closeModal(); });
+
+  mCopy.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(mPrompt.textContent);
+      mCopy.classList.add('copied');
+      mCopy.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> Kopiert';
+      setTimeout(() => {
+        mCopy.classList.remove('copied');
+        mCopy.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Kopieren';
+      }, 1800);
+    } catch (e) {
+      mCopy.textContent = 'Fehler beim Kopieren';
+    }
+  });
+</script>
+</Layout>
