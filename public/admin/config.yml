@@ -34,7 +34,7 @@ collections:
            - "Stakeholder-Mapping"
            - "Recherche & Analyse"
            - "Sprachliche Qualitätskontrolle"
-        label: "Phase"
+      - label: "Phase"
         name: "phase"
         widget: "select"
         options:
