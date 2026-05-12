@@ -8,14 +8,14 @@ const prompts = allPrompts
   .sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
 
 const categories = [...new Set(prompts.map((p) => p.category))].sort();
-const stages = [...new Set(prompts.map((p) => p.stage))].sort();
+const phases = [...new Set(prompts.map((p) => p.phase))].sort();
 const subjects = [...new Set(prompts.map((p) => p.subject))].sort();
 ---
 
-<Layout title="Prompt-Profi · KI-Prompts für Lehrkräfte">
+<Layout title="Prompt-Profi · KI-Prompts für Kommunikationsprofis">
   <header class="hero">
     <h1>Prompt-Profi</h1>
-    <p>Geprüfte KI-Prompts für den Schulalltag.</p>
+    <p>Geprüfte KI-Prompts für die HimmelsSchreiber.</p>
   </header>
 
   <div class="controls">
@@ -31,12 +31,12 @@ const subjects = [...new Set(prompts.map((p) => p.subject))].sort();
         <option value="">Alle Kategorien</option>
         {categories.map((c) => <option value={c}>{c}</option>)}
       </select>
-      <select id="f-stage" aria-label="Schulstufe">
-        <option value="">Alle Schulstufen</option>
-        {stages.map((s) => <option value={s}>{s}</option>)}
+      <select id="f-phase" aria-label="Phasen">
+        <option value="">Alle Phasen</option>
+        {phases.map((s) => <option value={s}>{s}</option>)}
       </select>
-      <select id="f-subject" aria-label="Fach">
-        <option value="">Alle Fächer</option>
+      <select id="f-subject" aria-label="Branche">
+        <option value="">Alle Branchen</option>
         {subjects.map((s) => <option value={s}>{s}</option>)}
       </select>
       <button id="reset" type="button" aria-label="Filter zurücksetzen" title="Filter zurücksetzen">
@@ -55,7 +55,7 @@ const subjects = [...new Set(prompts.map((p) => p.subject))].sort();
         class="card"
         data-id={p.id}
         data-cat={p.category}
-        data-stage={p.stage}
+        data-phase={p.phase}
         data-subject={p.subject}
         data-haystack={`${p.title} ${p.description} ${p.prompt} ${p.category} ${p.subject}`.toLowerCase()}
       >
@@ -63,7 +63,7 @@ const subjects = [...new Set(prompts.map((p) => p.subject))].sort();
         <p class="desc">{p.description}</p>
         <div class="badges">
           <span class="badge badge-cat">{p.category}</span>
-          <span class="badge badge-stage">{p.stage}</span>
+          <span class="badge badge-phase">{p.phase}</span>
           <span class="badge badge-subject">{p.subject}</span>
         </div>
       </li>
@@ -77,7 +77,7 @@ const subjects = [...new Set(prompts.map((p) => p.subject))].sort();
   <!-- Prompt-Daten als JSON für Modal -->
   <script type="application/json" id="prompts-data" set:html={JSON.stringify(
     prompts.reduce((acc, p) => {
-      acc[p.id] = { title: p.title, description: p.description, prompt: p.prompt, hint: p.hint, category: p.category, stage: p.stage, subject: p.subject };
+      acc[p.id] = { title: p.title, description: p.description, prompt: p.prompt, hint: p.hint, category: p.category, phase: p.phase, subject: p.subject };
       return acc;
     }, {})
   )} />
@@ -112,7 +112,7 @@ const subjects = [...new Set(prompts.map((p) => p.subject))].sort();
   const cards = Array.from(grid.querySelectorAll('.card'));
   const search = document.getElementById('search');
   const fCat = document.getElementById('f-cat');
-  const fStage = document.getElementById('f-stage');
+  const fStage = document.getElementById('f-phase');
   const fSubject = document.getElementById('f-subject');
   const reset = document.getElementById('reset');
   const emptyReset = document.getElementById('empty-reset');
@@ -125,7 +125,7 @@ const subjects = [...new Set(prompts.map((p) => p.subject))].sort();
     let visible = 0;
     cards.forEach((card) => {
       const matchCat = !c || card.dataset.cat === c;
-      const matchStage = !s || card.dataset.stage === s;
+      const matchStage = !s || card.dataset.phase === s;
       const matchSubject = !sb || card.dataset.subject === sb;
       const matchSearch = !q || card.dataset.haystack.includes(q);
       const show = matchCat && matchStage && matchSubject && matchSearch;
@@ -162,7 +162,7 @@ const subjects = [...new Set(prompts.map((p) => p.subject))].sort();
     mTitle.textContent = p.title;
     mDesc.textContent = p.description;
     mPrompt.textContent = p.prompt;
-    mBadges.innerHTML = `<span class="badge badge-cat">${p.category}</span><span class="badge badge-stage">${p.stage}</span><span class="badge badge-subject">${p.subject}</span>`;
+    mBadges.innerHTML = `<span class="badge badge-cat">${p.category}</span><span class="badge badge-phase">${p.phase}</span><span class="badge badge-subject">${p.subject}</span>`;
     if (p.hint) { mHint.textContent = 'Hinweis: ' + p.hint; mHint.hidden = false; }
     else { mHint.hidden = true; }
     modal.hidden = false;

@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: gbabing/prompt-profi
+  repo: gbabing/prompt-profi-pr
   branch: main
   base_url: https://prompt-profi-cms-auth.gbabing.workers.dev
   auth_endpoint: /auth
@@ -27,26 +27,30 @@ collections:
         name: "category"
         widget: "select"
         options:
-          - "Unterrichtsvorbereitung"
-          - "Kreativer Unterricht"
-          - "Arbeitsorganisation"
-          - "Differenzierung"
-          - "Feedback"
-          - "Elternkommunikation"
-      - label: "Schulstufe"
-        name: "stage"
+           - "Krisenkommunikation"
+           - "Pressemitteilungen"
+           - "Strategische Konzeption"
+           - "Social Media"
+           - "Stakeholder-Mapping"
+           - "Recherche & Analyse"
+           - "Sprachliche Qualitätskontrolle"
+        label: "Phase"
+        name: "phase"
         widget: "select"
         options:
-          - "Grundschule"
-          - "Sek I"
-          - "Sek II"
-          - "Berufsschule"
-          - "Alle"
-      - label: "Fach"
+          - "Strategie"
+          - "Umsetzung"
+          - "Auswertung"
+      - label: "Branche"
         name: "subject"
-        widget: "string"
-        hint: "z.B. Deutsch, Mathematik, Fächerübergreifend"
-      - { label: "Hinweis (optional)", name: "hint", widget: "string", required: false, hint: "Z.B. zu Modell-Kompatibilität oder Anwendung in telli/AIS.chat" }
+        widget: "select"
+        -options:
+          - "B2B"
+          - "B2C"
+          - "NGO"
+          - "Öffentlicher Sektor"
+          - "Politik"
+          - "Branchenübergreifend"
       - label: "Prompt-Text"
         name: "prompt"
         widget: "text"
