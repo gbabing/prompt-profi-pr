@@ -4,7 +4,7 @@ description: "Strukturierte Pressemitteilung für einen Produkt- oder Service-La
 category: "Pressemitteilungen"
 phase: "Umsetzung"
 subject: "B2B"
-order: 1
+order: 3
 prompt: |
   Erstelle eine Pressemitteilung zu folgendem Launch: [Produkt/Service kurz beschreiben].
 
@@ -17,4 +17,8 @@ prompt: |
 
   Unternehmen: [Name]
   Zielgruppe der Mitteilung: [Wirtschaftspresse / Fachpresse / regionale Presse]
+
+  Liefere zusätzlich:
+  - Drei alternative Headlines (eine sachlich, eine pointiert, eine boulevardesk)
+  - Eine Sperrfrist-Variante (mit Hinweistext oben)
 ---
