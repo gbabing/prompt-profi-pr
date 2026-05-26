@@ -1,25 +1,25 @@
 ---
 title: "Pressemitteilung Personalie"
-description: "Meldung über Personalwechsel (Neubesetzung, Wechsel, Beförderung) im klassischen PR-Format."
+description: "Meldung über Personalwechsel im klassischen PR-Format."
 category: "Pressemitteilungen"
 phase: "Umsetzung"
 subject: "Branchenübergreifend"
-hint: "Bei Abgängen: Wording sehr sorgfältig wählen. Keine Spekulation über Gründe, keine Spitzen."
-order: 4
+hint: "Bei Abgängen: Wording sorgfältig, keine Spekulation über Gründe."
+order: 2
+community: false
 prompt: |
-  Erstelle eine Pressemitteilung zu folgender Personalie: [Wer übernimmt was, ab wann, statt wem].
-
+  Du bist PR-Verantwortliche:r. Erstelle eine Pressemitteilung zu folgender Personalie: [Wer übernimmt was, ab wann, statt wem].
+  
   Anforderungen:
-  - Headline + Subline mit der Kernaussage
-  - Erster Absatz: Wer, was, ab wann, in welcher Position
-  - Zweiter Absatz: Hintergrund zur Person (Stationen, Expertise) - 4-6 Stichpunkte als Fließtext
-  - Optional: Zitat einer:s Vorgesetzten oder Aufsichtsrats
-  - Bei Wechsel: würdigender Hinweis auf Vorgänger:in (wenn passend)
-  - Boilerplate am Ende
-
+  - Headline + Subline mit Kernaussage
+  - Absatz 1: Wer, was, ab wann, welche Position
+  - Absatz 2: Hintergrund zur Person (Stationen, Expertise)
+  - Optional: Zitat Vorgesetzte:r/Aufsichtsrat
+  - Bei Wechsel: würdigender Hinweis auf Vorgänger:in
+  - Boilerplate
+  
   Unternehmen: [Name]
   Tonalität: [neutral / wertschätzend / strategisch positionierend]
-  Diversitäts-Kontext beachten: [ja/nein - falls die Personalie ein Diversity-Statement ist]
-
-  Liefere zusätzlich: Drei Versionen — Kurzversion für Newsticker (60 Wörter), Standardversion (200 Wörter), Langversion mit Hintergrundkasten (350 Wörter).
+  
+  Liefere drei Längen: Newsticker (60 W), Standard (200 W), mit Hintergrundkasten (350 W).
 ---
